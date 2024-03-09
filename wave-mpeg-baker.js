@@ -6,7 +6,7 @@ const dirPath = path.join(__dirname, 'temp');
 const fps = 60;
 
 // Get the list of JPEG files in the directory
-const files = fs.readdirSync(dirPath).filter(file => file.endsWith('.jpeg'));
+const files = fs.readdirSync(dirPath).filter(file => file.endsWith('.jpg') || file.endsWith('.jpeg'));
 
 // Ensure the files are in the correct order
 files.sort((a, b) => parseInt(a.slice(5, -5)) - parseInt(b.slice(5, -5)));
