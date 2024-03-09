@@ -17,6 +17,7 @@ const encoder = new GIFEncoder(width, height);
 const outputPath = path.join(dirPath, 'wave.gif');
 encoder.createReadStream().pipe(fs.createWriteStream(outputPath));
 encoder.start();
+encoder.setDelay(17);  // frame delay in ms
 encoder.setRepeat(0);   // 0 for repeat, -1 for no-repeat
 encoder.setQuality(10); // image quality. 10 is for high quality
 
