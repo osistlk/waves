@@ -27,6 +27,7 @@
     "nodemon": "^3.1.0"
   },
   "dependencies": {
+    "canvas": "^2.11.2",
     "electron-squirrel-startup": "^1.0.0"
   }
 }
