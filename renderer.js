@@ -5,7 +5,7 @@ let time = 0;
 let waveAmplitude = 100;
 const waveFrequency = 0.01;
 
-function draw() {
+function drawStandingWave() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Set the drawing color based on theme preference
@@ -21,7 +21,7 @@ function draw() {
     ctx.stroke();
 
     time += 0.02;
-    requestAnimationFrame(draw);
+    requestAnimationFrame(drawStandingWave);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -29,4 +29,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-draw();
+drawStandingWave();
