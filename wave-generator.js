@@ -4,8 +4,8 @@ const { createCanvas } = require('canvas');
 const ProgressBar = require('progress');
 const child_process = require('child_process');
 
-const width = 800;
-const height = 600;
+const width = 2560;
+const height = 1440;
 const waveAmplitude = 100;
 const waveFrequency = 0.02;
 const fps = 60;
@@ -59,13 +59,13 @@ const framePromises = Array.from({ length: frames }, async (_, frame) => {
             stream.pipe(out);
             out.on('finish', resolve);
             out.on('error', reject);
+
+            // Update the progress bar
+            bar.tick();
         });
     } else {
         console.log(`File ${filePath} already exists.`);
     }
-
-    // Update the progress bar
-    bar.tick();
 });
 
 // Wait for all frames to be created
