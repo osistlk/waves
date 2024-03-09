@@ -4,8 +4,8 @@ const path = require('path');
 const GIFEncoder = require('gifencoder');
 const ProgressBar = require('progress');
 
-const width = 400;
-const height = 400;
+const width = 2560;
+const height = 1440;
 const waveAmplitude = 100;
 const waveFrequency = 0.01;
 const dirPath = path.join(__dirname, 'temp');
