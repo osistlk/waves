@@ -4,8 +4,8 @@ const path = require('path');
 const GIFEncoder = require('gifencoder');
 const ProgressBar = require('progress');
 
-const width = 400;
-const height = 400;
+const width = 2560;
+const height = 1440;
 const waveAmplitude = 100;
 const waveFrequency = 0.01;
 const dirPath = path.join(__dirname, 'temp');
@@ -41,7 +41,7 @@ for (let frame = 0; frame < frames; frame++) {
     ctx.strokeStyle = 'white';
 
     // Calculate the amplitude for this frame
-    let amplitude = 50 * (1 + Math.sin(2 * Math.PI * frame / 120));
+    let amplitude = waveAmplitude * (1 + Math.sin(2 * Math.PI * frame / (fps * 2)));
 
     // Variables for the wave
     let time = frame / frames; // Change over time
