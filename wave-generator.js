@@ -44,7 +44,7 @@ for (let frame = 0; frame < frames; frame++) {
 
     // Draw the wave
     ctx.beginPath();
-    for (let x = 0; x < width; x + fps) {
+    for (let x = 0; x < width; x++) {
         let y = waveAmplitude * Math.sin((x * waveFrequency) + time) + (height / 2);
         ctx.lineTo(x, y);
     }
