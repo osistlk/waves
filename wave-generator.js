@@ -1,3 +1,9 @@
+// Record the start time
+const startTime = process.hrtime();
+
+// Record the initial memory usage
+const initialMemoryUsage = process.memoryUsage().heapUsed;
+
 const fs = require('fs');
 const path = require('path');
 const { createCanvas } = require('canvas');
@@ -6,7 +12,7 @@ const child_process = require('child_process');
 
 const width = 2560;
 const height = 1440;
-const waveAmplitude = 100;
+const waveAmplitude = 500;
 const waveFrequency = 0.02;
 const fps = 60;
 const length = 10; // Length of the video in seconds
@@ -73,4 +79,14 @@ Promise.all(framePromises).then(() => {
     // Use FFmpeg to create the video
     const videoPath = path.join(dirPath, 'video.mp4');
     child_process.execSync(`ffmpeg -framerate ${fps} -i ${dirPath}/wave-%d.jpg -c:v libx264 -pix_fmt yuv420p ${videoPath}`);
+
+    // Calculate and log the time taken
+    const endTime = process.hrtime(startTime);
+    const timeTaken = endTime[0] + endTime[1] / 1e9;
+    console.log(`Time taken: ${timeTaken.toFixed(2)} seconds`);
+
+    // Calculate and log the average memory usage
+    const finalMemoryUsage = process.memoryUsage().heapUsed;
+    const averageMemoryUsage = (initialMemoryUsage + finalMemoryUsage) / 2;
+    console.log(`Average memory usage: ${(averageMemoryUsage / 1024 / 1024).toFixed(2)} MB`);
 });
