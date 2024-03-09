@@ -1,24 +1,17 @@
 const fs = require('fs');
 const { createCanvas } = require('canvas');
 const path = require('path');
-const GIFEncoder = require('gifencoder');
 const ProgressBar = require('progress');
+const child_process = require('child_process');
 
-const width = 400;
-const height = 400;
+const width = 2560; // 1440p width
+const height = 1440; // 1440p height
 const waveFrequency = 0.01;
 const dirPath = path.join(__dirname, 'temp');
+const framesDirPath = path.join(dirPath, 'frames');
 
-// Ensure the directory exists
-fs.mkdirSync(dirPath, { recursive: true });
-
-const encoder = new GIFEncoder(width, height);
-const outputPath = path.join(dirPath, 'wave.gif');
-encoder.createReadStream().pipe(fs.createWriteStream(outputPath));
-encoder.start();
-encoder.setDelay(17);  // frame delay in ms
-encoder.setRepeat(0);   // 0 for repeat, -1 for no-repeat
-encoder.setQuality(10); // image quality. 10 is for high quality
+// Ensure the frames directory exists
+fs.mkdirSync(framesDirPath, { recursive: true });
 
 const length = 10 // time in seconds
 const fps = 60;
@@ -52,11 +45,21 @@ for (let frame = 0; frame < frames; frame++) {
     }
     ctx.stroke();
 
-    // Add the frame to the GIF
-    encoder.addFrame(ctx);
+    // Add text overlay
+    ctx.font = '50px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText('Your Text Here', 50, 100); // Adjust coordinates as needed
+
+    // Save the frame as a JPEG file
+    const framePath = path.join(framesDirPath, `frame${frame.toString().padStart(3, '0')}.jpeg`);
+    const out = fs.createWriteStream(framePath);
+    const stream = canvas.createJPEGStream({ quality: 1 }); // High quality
+    stream.pipe(out);
 
     // Update the progress bar
     bar.tick();
 }
 
-encoder.finish();
+// Convert the frames to a video using FFmpeg
+const videoPath = path.join(dirPath, 'wave.mp4');
+child_process.execSync(`ffmpeg -framerate ${fps} -i ${framesDirPath}/frame%03d.jpeg -c:v libx264 -pix_fmt yuv420p -crf 0 ${videoPath}`);
