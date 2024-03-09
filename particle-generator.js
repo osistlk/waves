@@ -4,9 +4,9 @@ const { exec } = require('child_process');
 const path = require('path');
 const ProgressBar = require('progress');
 
-const width = 2560;
-const height = 1440;
-const numFrames = 600 * 6; // 10 seconds at 60 fps
+const width = 1280;
+const height = 720;
+const numFrames = 600; // 10 seconds at 60 fps
 const particles = [];
 const numParticles = 100;
 const tempDir = path.join(__dirname, 'temp');
@@ -16,13 +16,14 @@ const outputDir = path.join(__dirname, 'output');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-// Initialize particles
+// Initialize particles with random sizes
 for (let i = 0; i < numParticles; i++) {
     particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
         vx: (Math.random() - 0.5) * 20,
-        vy: (Math.random() - 0.5) * 20
+        vy: (Math.random() - 0.5) * 20,
+        size: Math.random() * 5 + 2 // Random size between 2 and 7
     });
 }
 
@@ -38,7 +39,7 @@ function drawFrame(frameIndex) {
     context.fillStyle = '#000';
     context.fillRect(0, 0, width, height);
 
-    // Draw particles
+    // Draw particles with varying sizes
     particles.forEach(particle => {
         particle.x += particle.vx;
         particle.y += particle.vy;
@@ -48,7 +49,7 @@ function drawFrame(frameIndex) {
         if (particle.y <= 0 || particle.y >= height) particle.vy *= -1;
 
         context.beginPath();
-        context.arc(particle.x, particle.y, 10, 0, 2 * Math.PI);
+        context.arc(particle.x, particle.y, particle.size, 0, 2 * Math.PI);
         context.fillStyle = '#fff';
         context.fill();
     });
