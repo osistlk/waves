@@ -1,35 +1,26 @@
 const fs = require('fs');
-const { createCanvas } = require('canvas');
 const path = require('path');
-const GIFEncoder = require('gifencoder');
+const { createCanvas } = require('canvas');
 const ProgressBar = require('progress');
 
-const width = 2560;
-const height = 1440;
+const width = 800;
+const height = 600;
 const waveAmplitude = 100;
-const waveFrequency = 0.01;
-const dirPath = path.join(__dirname, 'temp');
-
-// Ensure the directory exists
-fs.mkdirSync(dirPath, { recursive: true });
-
-const encoder = new GIFEncoder(width, height);
-const outputPath = path.join(dirPath, 'wave.gif');
-encoder.createReadStream().pipe(fs.createWriteStream(outputPath));
-encoder.start();
-encoder.setDelay(17);  // frame delay in ms
-encoder.setRepeat(0);   // 0 for repeat, -1 for no-repeat
-encoder.setQuality(10); // image quality. 10 is for high quality
-
-const length = 10 // time in seconds
+const waveFrequency = 0.02;
 const fps = 60;
+const length = 10; // Length of the video in seconds
+
+const dirPath = path.join(__dirname, 'temp');
+if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath);
+}
 const frames = length * fps;
+
 // Create a new progress bar
 const bar = new ProgressBar(':bar :percent ETA: :etas Elapsed: :elapseds', { total: frames, width: 20 });
 
-// Generate 600 frames
 // Generate frames
-for (let frame = 0; frame < frames; frame++) {
+const framePromises = Array.from({ length: frames }, async (_, frame) => {
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
@@ -54,20 +45,31 @@ for (let frame = 0; frame < frames; frame++) {
     }
     ctx.stroke();
 
-    // Add the frame to the GIF
-    encoder.addFrame(ctx);
-    // Write the frame to a JPEG file
+    // Save the frame as a JPEG file
     const filePath = path.join(dirPath, `wave-${frame}.jpg`);
-    const out = fs.createWriteStream(filePath);
-    const stream = canvas.createJPEGStream();
-    stream.pipe(out);
-    out.on('finish', () => {
-        console.log('The JPEG file was created.');
-    });
 
+    // Check if the file exists
+    if (!fs.existsSync(filePath)) {
+        const out = fs.createWriteStream(filePath);
+        const stream = canvas.createJPEGStream({ quality: 1 }); // High quality
+
+        // Wrap the stream.pipe() operation in a promise
+        await new Promise((resolve, reject) => {
+            stream.pipe(out);
+            out.on('finish', resolve);
+            out.on('error', reject);
+        });
+    } else {
+        console.log(`File ${filePath} already exists.`);
+    }
 
     // Update the progress bar
     bar.tick();
-}
+});
 
-encoder.finish();
+// Wait for all frames to be created
+Promise.all(framePromises).then(() => {
+    // Use FFmpeg to create the video
+    const videoPath = path.join(dirPath, 'video.mp4');
+    child_process.execSync(`ffmpeg -framerate ${fps} -i ${dirPath}/wave-%d.jpg -c:v libx264 -pix_fmt yuv420p ${videoPath}`);
+});
