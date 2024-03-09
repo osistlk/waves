@@ -6,7 +6,6 @@ const ProgressBar = require('progress');
 
 const width = 400;
 const height = 400;
-const waveAmplitude = 100;
 const waveFrequency = 0.01;
 const dirPath = path.join(__dirname, 'temp');
 
@@ -27,7 +26,6 @@ const frames = length * fps;
 // Create a new progress bar
 const bar = new ProgressBar(':bar :percent ETA: :etas Elapsed: :elapseds', { total: frames, width: 20 });
 
-// Generate 600 frames
 // Generate frames
 for (let frame = 0; frame < frames; frame++) {
     const canvas = createCanvas(width, height);
@@ -41,7 +39,7 @@ for (let frame = 0; frame < frames; frame++) {
     ctx.strokeStyle = 'white';
 
     // Calculate the amplitude for this frame
-    let amplitude = waveAmplitude * (1 + Math.sin(2 * Math.PI * frame / (fps * 2)));
+    let waveAmplitude = 50 * (1 + Math.sin(2 * Math.PI * frame / 120));
 
     // Variables for the wave
     let time = frame / frames; // Change over time
@@ -49,7 +47,7 @@ for (let frame = 0; frame < frames; frame++) {
     // Draw the wave
     ctx.beginPath();
     for (let x = 0; x < width; x++) {
-        let y = amplitude * Math.sin((x * waveFrequency) + time) + (height / 2);
+        let y = waveAmplitude * Math.sin((x * waveFrequency) + time) + (height / 2);
         ctx.lineTo(x, y);
     }
     ctx.stroke();
