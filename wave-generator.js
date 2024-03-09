@@ -1,8 +1,10 @@
 // Record the start time
 const startTime = process.hrtime();
 
-// Record the initial memory usage
-const initialMemoryUsage = process.memoryUsage().heapUsed;
+// Record the starting memory usage
+const startingMemoryUsage = process.memoryUsage().heapUsed;
+
+let peakMemoryUsage = startingMemoryUsage;
 
 const fs = require('fs');
 const path = require('path');
@@ -55,6 +57,9 @@ const framePromises = Array.from({ length: frames }, async (_, frame) => {
     // Save the frame as a JPEG file
     const filePath = path.join(dirPath, `wave-${frame}.jpg`);
 
+    const currentMemoryUsage = process.memoryUsage().heapUsed;
+    peakMemoryUsage = Math.max(peakMemoryUsage, currentMemoryUsage);
+
     // Check if the file exists
     if (!fs.existsSync(filePath)) {
         const out = fs.createWriteStream(filePath);
@@ -85,8 +90,9 @@ Promise.all(framePromises).then(() => {
     const timeTaken = endTime[0] + endTime[1] / 1e9;
     console.log(`Time taken: ${timeTaken.toFixed(2)} seconds`);
 
-    // Calculate and log the average memory usage
-    const finalMemoryUsage = process.memoryUsage().heapUsed;
-    const averageMemoryUsage = (initialMemoryUsage + finalMemoryUsage) / 2;
-    console.log(`Average memory usage: ${(averageMemoryUsage / 1024 / 1024).toFixed(2)} MB`);
+    // Log the starting, peak, and ending memory usage
+    const endingMemoryUsage = process.memoryUsage().heapUsed;
+    console.log(`Starting memory usage: ${(startingMemoryUsage / 1024 / 1024).toFixed(2)} MB`);
+    console.log(`Peak memory usage: ${(peakMemoryUsage / 1024 / 1024).toFixed(2)} MB`);
+    console.log(`Ending memory usage: ${(endingMemoryUsage / 1024 / 1024).toFixed(2)} MB`);
 });
