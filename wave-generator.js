@@ -41,7 +41,7 @@ for (let frame = 0; frame < frames; frame++) {
     ctx.strokeStyle = 'white';
 
     // Calculate the amplitude for this frame
-    let amplitude = 50 * (1 + Math.sin(2 * Math.PI * frame / 120));
+    let amplitude = waveAmplitude * (1 + Math.sin(2 * Math.PI * frame / (fps * 2)));
 
     // Variables for the wave
     let time = frame / frames; // Change over time
@@ -56,6 +56,15 @@ for (let frame = 0; frame < frames; frame++) {
 
     // Add the frame to the GIF
     encoder.addFrame(ctx);
+    // Write the frame to a JPEG file
+    const filePath = path.join(dirPath, `wave-${frame}.jpg`);
+    const out = fs.createWriteStream(filePath);
+    const stream = canvas.createJPEGStream();
+    stream.pipe(out);
+    out.on('finish', () => {
+        console.log('The JPEG file was created.');
+    });
+
 
     // Update the progress bar
     bar.tick();
