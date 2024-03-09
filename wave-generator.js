@@ -37,11 +37,15 @@ const framePromises = Array.from({ length: frames }, async (_, frame) => {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, width, height);
 
-    // Set the foreground color
+    // Set the line color
     ctx.strokeStyle = 'white';
 
+    // Modify the wave amplitude and frequency a small bit for each frame
+    let modifiedWaveAmplitude = waveAmplitude + (frame * 0.1);
+    let modifiedWaveFrequency = waveFrequency + (frame * 0.001);
+
     // Calculate the amplitude for this frame
-    let amplitude = waveAmplitude * (1 + Math.sin(2 * Math.PI * frame / (fps * 2)));
+    let amplitude = modifiedWaveAmplitude * (1 + Math.sin(2 * Math.PI * frame / (fps * 2)));
 
     // Variables for the wave
     let time = frame / frames; // Change over time
@@ -49,7 +53,7 @@ const framePromises = Array.from({ length: frames }, async (_, frame) => {
     // Draw the wave
     ctx.beginPath();
     for (let x = 0; x < width; x++) {
-        let y = amplitude * Math.sin((x * waveFrequency) + time) + (height / 2);
+        let y = amplitude * Math.sin((x * modifiedWaveFrequency) + time) + (height / 2);
         ctx.lineTo(x, y);
     }
     ctx.stroke();
