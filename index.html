@@ -1,22 +1,52 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <meta
-      http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <title>Hello from Electron renderer!</title>
-  </head>
-  <body>
-    <h1>Hello from Electron renderer!</h1>
-    <p>👋</p>
-    <p id="info"></p>
-    <p id="wave"></p>
-  </body>
-  <script src="./renderer.js"></script>
+<head>
+<meta charset="UTF-8" />
+  <meta
+  http-equiv="Content-Security-Policy"
+  content="default-src 'self'; script-src 'self'"
+/>
+<meta
+  http-equiv="X-Content-Security-Policy"
+  content="default-src 'self'; script-src 'self'"
+/>
+  <title>Wave Simulation</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      transition: background-color 0.5s;
+    }
+
+    canvas {
+      border: 1px solid #ccc; /* Light border by default */
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #333;
+        color: white;
+      }
+
+      canvas {
+        border: 1px solid #aaa; /* Darker border for dark mode */
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background-color: #fff;
+        color: black;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="waveCanvas" width="800" height="600"></canvas>
+</body>
+<script src="./renderer.js"></script>
 </html>

@@ -1,16 +1,33 @@
-const count = 0;
-const information = document.getElementById('info')
-const wave = document.getElementById('wave')
+const canvas = document.getElementById('waveCanvas');
+const ctx = canvas.getContext('2d');
 
-information.innerText = `This app is using Chrome (v${versions.chrome()}), Node.js (v${versions.node()}), and Electron (v${versions.electron()})`
-wave.innerText = `🌊: ${++count}`
+let time = 0;
+const waveAmplitude = 100;
+const waveFrequency = 0.01;
 
-const updateWaveRender = async () => {
-    const response = await window.versions.ping()
-    console.log(response) // prints out 'pong'
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Set the drawing color based on theme preference
+    const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    ctx.strokeStyle = prefersDarkMode ? 'white' : 'black';
+
+    ctx.beginPath();
+    for (let x = 0; x < canvas.width; x++) {
+        // Calculate the y position of the wave
+        let y = waveAmplitude * Math.sin((x * waveFrequency) + time) + (canvas.height / 2);
+        ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    time += 0.01;
+    requestAnimationFrame(draw);
 }
 
-// setInterval(() => {
-//     updateWaveRender()
-// }, 1000);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM content loaded')
+    window.electron.test();
+});
+
+
+draw();
