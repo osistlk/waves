@@ -41,7 +41,10 @@ const particles = [];
 // Set up particles based on files
 files.sort(); // Sort files alphabetically
 for (let i = 0; i < numParticles; i++) {
-    const size = 2 + (5 * i) / numParticles; // Scale size based on file position
+    // Adjusted for larger sizes
+    const baseSize = 10; // Starting size
+    const maxSize = 50; // Maximum size for the largest particle
+    const size = baseSize + ((maxSize - baseSize) * i) / numParticles; // Scale size based on file position
     const hash = hashString(files[i] + i); // Hash file name and position
     const color = hashToColor(hash); // Map hash to color
     particles.push({
@@ -49,7 +52,7 @@ for (let i = 0; i < numParticles; i++) {
         y: Math.random() * height,
         vx: (Math.random() - 0.5) * 20,
         vy: (Math.random() - 0.5) * 20,
-        size, // Size varies based on the file's order
+        size, // Updated size calculation for much larger particles
         color // Color determined by hash
     });
 }
