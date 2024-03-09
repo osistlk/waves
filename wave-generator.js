@@ -2,6 +2,7 @@ const fs = require('fs');
 const { createCanvas } = require('canvas');
 const path = require('path');
 const GIFEncoder = require('gifencoder');
+const ProgressBar = require('progress');
 
 const width = 400;
 const height = 400;
@@ -17,8 +18,10 @@ const outputPath = path.join(dirPath, 'wave.gif');
 encoder.createReadStream().pipe(fs.createWriteStream(outputPath));
 encoder.start();
 encoder.setRepeat(0);   // 0 for repeat, -1 for no-repeat
-encoder.setDelay(1);  // frame delay in ms
 encoder.setQuality(10); // image quality. 10 is for high quality
+
+// Create a new progress bar
+const bar = new ProgressBar(':bar :percent', { total: 60 });
 
 // Generate 60 frames
 for (let frame = 0; frame < 60; frame++) {
@@ -46,16 +49,8 @@ for (let frame = 0; frame < 60; frame++) {
     // Add the frame to the GIF
     encoder.addFrame(ctx);
 
-    // Save the image as JPEG
-    const jpegPath = path.join(dirPath, `wave${frame}.jpg`);
-    const buffer = canvas.toBuffer('image/jpeg', { quality: 1 }); // 1 is the highest quality
-    fs.writeFileSync(jpegPath, buffer);
+    // Update the progress bar
+    bar.tick();
 }
 
 encoder.finish();
-
-// Remove the JPEG images
-for (let frame = 0; frame < 60; frame++) {
-    const jpegPath = path.join(dirPath, `wave${frame}.jpg`);
-    fs.unlinkSync(jpegPath);
-}
