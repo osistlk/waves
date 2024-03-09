@@ -2,7 +2,7 @@ const canvas = document.getElementById('waveCanvas');
 const ctx = canvas.getContext('2d');
 
 let time = 0;
-let waveAmplitude = 10;
+let waveAmplitude = 100;
 const waveFrequency = 0.01;
 
 function draw() {
@@ -14,13 +14,13 @@ function draw() {
 
     ctx.beginPath();
     for (let x = 0; x < canvas.width; x++) {
-        // Calculate the y position of the wave
-        let y = waveAmplitude * Math.sin((x * waveFrequency) + time) + (canvas.height / 2);
+        // Calculate the y position of the standing wave
+        let y = waveAmplitude * (Math.sin((x * waveFrequency) + time) + Math.sin((x * waveFrequency) - time)) + (canvas.height / 2);
         ctx.lineTo(x, y);
     }
     ctx.stroke();
 
-    time += 0.01;
+    time += 0.02;
     requestAnimationFrame(draw);
 }
 
