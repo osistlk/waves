@@ -12,10 +12,10 @@ const { createCanvas } = require('canvas');
 const ProgressBar = require('progress');
 const child_process = require('child_process');
 
-const width = 2560;
-const height = 1440;
-const waveAmplitude = 500;
-const waveFrequency = 0.02;
+const width = 800;
+const height = 800;
+const waveAmplitude = 100;
+const waveFrequency = 0.01;
 const fps = 60;
 const length = 10; // Length of the video in seconds
 
@@ -37,15 +37,11 @@ const framePromises = Array.from({ length: frames }, async (_, frame) => {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, width, height);
 
-    // Set the line color
+    // Set the foreground color
     ctx.strokeStyle = 'white';
 
-    // Modify the wave amplitude and frequency a small bit for each frame
-    let modifiedWaveAmplitude = waveAmplitude + (frame * 0.1);
-    let modifiedWaveFrequency = waveFrequency + (frame * 0.001);
-
     // Calculate the amplitude for this frame
-    let amplitude = modifiedWaveAmplitude * (1 + Math.sin(2 * Math.PI * frame / (fps * 2)));
+    let amplitude = waveAmplitude * (1 + Math.sin(2 * Math.PI * frame / (fps * 2)));
 
     // Variables for the wave
     let time = frame / frames; // Change over time
@@ -53,7 +49,8 @@ const framePromises = Array.from({ length: frames }, async (_, frame) => {
     // Draw the wave
     ctx.beginPath();
     for (let x = 0; x < width; x++) {
-        let y = amplitude * Math.sin((x * modifiedWaveFrequency) + time) + (height / 2);
+        // Modify the phase of the sine function to create the effect of the wave moving from left to right
+        let y = amplitude * Math.sin((x * waveFrequency) + (frame * 0.01)) + (height / 2);
         ctx.lineTo(x, y);
     }
     ctx.stroke();
