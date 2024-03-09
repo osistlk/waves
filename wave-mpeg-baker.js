@@ -8,8 +8,12 @@ const fps = 60;
 // Get the list of JPEG files in the directory
 const files = fs.readdirSync(dirPath).filter(file => file.endsWith('.jpg') || file.endsWith('.jpeg'));
 
-// Ensure the files are in the correct order
-files.sort((a, b) => parseInt(a.slice(5, -5)) - parseInt(b.slice(5, -5)));
+// sort files by the number in the filename
+files.sort((a, b) => {
+    const aNum = parseInt(a.match(/\d+/)[0]);
+    const bNum = parseInt(b.match(/\d+/)[0]);
+    return aNum - bNum;
+});
 
 // Write the list of files to a text file
 const listPath = path.join(dirPath, 'files.txt');
