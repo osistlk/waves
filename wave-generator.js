@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { createCanvas } = require('canvas');
 const ProgressBar = require('progress');
+const child_process = require('child_process');
 
 const width = 800;
 const height = 600;
