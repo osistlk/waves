@@ -2,7 +2,7 @@ const canvas = document.getElementById('waveCanvas');
 const ctx = canvas.getContext('2d');
 
 let time = 0;
-const waveAmplitude = 100;
+let waveAmplitude = 0.000001;
 const waveFrequency = 0.01;
 
 function draw() {
@@ -24,9 +24,11 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM content loaded')
-    window.electron.test();
+    const cpuUsage = await window.systemStats.getUsage() + '';
+    console.log(cpuUsage);
+    waveAmplitude *= cpuUsage;
 });
 
 
