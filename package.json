@@ -1,0 +1,15 @@
+{
+  "name": "waves",
+  "version": "1.0.0",
+  "description": "sandbox electron app for crude wave simulation",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jdaytona",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^29.1.1"
+  }
+}
