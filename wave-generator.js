@@ -12,8 +12,8 @@ const { createCanvas } = require('canvas');
 const ProgressBar = require('progress');
 const child_process = require('child_process');
 
-const width = 800;
-const height = 800;
+const width = 1280;
+const height = 720;
 const waveAmplitude = 100;
 const waveFrequency = 0.01;
 const fps = 60;
