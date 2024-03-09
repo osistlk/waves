@@ -40,19 +40,13 @@ const framePromises = Array.from({ length: frames }, async (_, frame) => {
     // Set the foreground color
     ctx.strokeStyle = 'white';
 
-    // Calculate the amplitude for this frame
-    let amplitude = waveAmplitude * (1 + Math.sin(2 * Math.PI * frame / (fps * 2)));
+    // Flip along the y-axis and move along the x-axis
+    ctx.translate(frame, 0);
+    ctx.scale(-1, 1);
 
-    // Variables for the wave
-    let time = frame / frames; // Change over time
-
-    // Draw the wave
+    // Draw a giant "C"
     ctx.beginPath();
-    for (let x = 0; x < width; x++) {
-        // Modify the phase of the sine function to create the effect of the wave moving from left to right
-        let y = amplitude * Math.sin((x * waveFrequency) + (frame * 0.01)) + (height / 2);
-        ctx.lineTo(x, y);
-    }
+    ctx.arc(width / 2, height / 2, Math.min(width, height) / 2 - 10, 0.785, 5.50); // 0.785 and 5.50 are approximations of 45 and 315 degrees in radians
     ctx.stroke();
 
     // Save the frame as a JPEG file
