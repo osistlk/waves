@@ -7,8 +7,6 @@ const ProgressBar = require('progress');
 const width = 1280;
 const height = 720;
 const numFrames = 600; // 10 seconds at 60 fps
-const particles = [];
-const numParticles = 100;
 const tempDir = path.join(__dirname, 'temp');
 const outputDir = path.join(__dirname, 'output');
 
@@ -16,14 +14,21 @@ const outputDir = path.join(__dirname, 'output');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-// Initialize particles with random sizes
+// Get files from current working directory to determine particle settings
+const files = fs.readdirSync(process.cwd()).filter(file => fs.statSync(file).isFile());
+const numParticles = files.length;
+const particles = [];
+
+// Set up particles based on files
+files.sort(); // Sort files alphabetically
 for (let i = 0; i < numParticles; i++) {
+    const size = 2 + (5 * i) / numParticles; // Scale size based on file position
     particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
         vx: (Math.random() - 0.5) * 20,
         vy: (Math.random() - 0.5) * 20,
-        size: Math.random() * 5 + 2 // Random size between 2 and 7
+        size // Size varies based on the file's order
     });
 }
 
