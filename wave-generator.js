@@ -21,11 +21,12 @@ encoder.setDelay(17);  // frame delay in ms
 encoder.setRepeat(0);   // 0 for repeat, -1 for no-repeat
 encoder.setQuality(10); // image quality. 10 is for high quality
 
+const totalFPS = 600;
 // Create a new progress bar
-const bar = new ProgressBar(':bar :percent ETA: :etas Elapsed: :elapseds', { total: 600, width: 20 });
+const bar = new ProgressBar(':bar :percent ETA: :etas Elapsed: :elapseds', { total: totalFPS, width: 20 });
 
 // Generate 600 frames
-for (let frame = 0; frame < 600; frame++) {
+for (let frame = 0; frame < totalFPS; frame++) {
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
@@ -37,7 +38,7 @@ for (let frame = 0; frame < 600; frame++) {
     ctx.strokeStyle = 'white';
 
     // Variables for the wave
-    let time = frame / 600; // Change over time
+    let time = frame / totalFPS; // Change over time
 
     // Draw the wave
     ctx.beginPath();
