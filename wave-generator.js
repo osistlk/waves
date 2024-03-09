@@ -17,7 +17,7 @@ const encoder = new GIFEncoder(width, height);
 const outputPath = path.join(dirPath, 'wave.gif');
 encoder.createReadStream().pipe(fs.createWriteStream(outputPath));
 encoder.start();
-encoder.setDelay(1000);  // frame delay in ms
+encoder.setDelay(17);  // frame delay in ms
 encoder.setRepeat(0);   // 0 for repeat, -1 for no-repeat
 encoder.setQuality(10); // image quality. 10 is for high quality
 
@@ -28,6 +28,7 @@ const frames = length * fps;
 const bar = new ProgressBar(':bar :percent ETA: :etas Elapsed: :elapseds', { total: frames, width: 20 });
 
 // Generate 600 frames
+// Generate frames
 for (let frame = 0; frame < frames; frame++) {
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
@@ -39,13 +40,16 @@ for (let frame = 0; frame < frames; frame++) {
     // Set the foreground color
     ctx.strokeStyle = 'white';
 
+    // Calculate the amplitude for this frame
+    let amplitude = 50 * (1 + Math.sin(2 * Math.PI * frame / 120));
+
     // Variables for the wave
     let time = frame / frames; // Change over time
 
     // Draw the wave
     ctx.beginPath();
     for (let x = 0; x < width; x++) {
-        let y = waveAmplitude * Math.sin((x * waveFrequency) + time) + (height / 2);
+        let y = amplitude * Math.sin((x * waveFrequency) + time) + (height / 2);
         ctx.lineTo(x, y);
     }
     ctx.stroke();
