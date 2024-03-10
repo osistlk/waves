@@ -29,7 +29,7 @@ async function createImages() {
     }
 
     fs.mkdirSync(tempDir, { recursive: true });
-    console.log();
+    console.log('');
     console.log(`Images will be written to ${tempDir}`);
 
     const bar = new ProgressBar(':bar :percent :etas :elapseds', { total: totalImages + 1, width: 40 });
