@@ -1,11 +1,12 @@
 const fs = require('fs');
 const { createCanvas } = require('canvas');
 const path = require('path');
-const os = require('os');
+const ProgressBar = require('progress');
 
 const width = 800;
 const height = 600;
 const ballRadius = 50;
+const totalImages = 600;
 
 function drawBall(context, x, y) {
     context.beginPath();
@@ -18,9 +19,13 @@ function drawBall(context, x, y) {
 }
 
 async function createImages() {
-    const tempDir = os.tmpdir();
+    const tempDir = path.join(process.cwd(), 'temp');
+    fs.mkdirSync(tempDir, { recursive: true });
+    console.log(`Images will be written to ${tempDir}`);
 
-    for (let i = 0; i < 600; i++) {
+    const bar = new ProgressBar(':bar :percent', { total: totalImages });
+
+    for (let i = 0; i < totalImages; i++) {
         const canvas = createCanvas(width, height);
         const context = canvas.getContext('2d');
 
@@ -32,6 +37,8 @@ async function createImages() {
 
         const buffer = canvas.toBuffer('image/jpeg');
         await fs.promises.writeFile(path.join(tempDir, `image${i}.jpeg`), buffer);
+
+        bar.tick();
     }
 }
 
