@@ -59,7 +59,9 @@ async function createImages() {
     fs.mkdirSync(tempDir, { recursive: true });
     console.log(`\nImages will be written to ${tempDir}`);
 
-    const bar = new ProgressBar(':bar :percent :etas :elapseds', { total: totalImages, width: 40 });
+    const bar = new ProgressBar(':bar :percent :etas :elapseds', { total: (totalImages * 2) + 3, width: 40 });
+
+    const imageWritePromises = []; // Array to hold all the write promises
 
     for (let i = 0; i < totalImages; i++) {
         const canvas = createCanvas(width, height);
@@ -71,23 +73,34 @@ async function createImages() {
         }
 
         const buffer = canvas.toBuffer('image/jpeg', { quality: 1 });
-        await fs.promises.writeFile(path.join(tempDir, `image${i}.jpeg`), buffer);
-        bar.tick();
+        // Push the promise from writeFile into the array instead of awaiting it immediately
+        const writeFilePromise = fs.promises.writeFile(path.join(tempDir, `image${i}.jpeg`), buffer);
+        imageWritePromises.push(writeFilePromise);
+        bar.tick(); // Update the progress bar when each promise is pushed
+
+        writeFilePromise.then(() => bar.tick()); // Update the progress bar when each promise is resolved
     }
 
-    // Generate collision sound for the video
+    // Wait for all the writeFile operations to complete
+    await Promise.all(imageWritePromises);
+    console.log('\nAll images have been written.');
+    bar.tick();
+
+    // Proceed to generate collision sound and compile the video
     await createCollisionSound(collisions, 1 / 60, 44100); // Assuming 60 FPS video
 
     console.log(`\nCollision sound generated as 'collisionSound.wav'`);
+    bar.tick();
 
     // Update the ffmpeg command to use the new collision sound file
-    exec(`ffmpeg -framerate 60 -i ${tempDir}/image%01d.jpeg -i collisionSound.wav -c:v mpeg4 -c:a aac -strict experimental -r 60 ${tempDir}\\output.mp4`, (error, stdout, stderr) => {
+    exec(`ffmpeg -framerate 60 -i ${tempDir}/image%01d.jpeg -i collisionSound.wav -c:v libx264 -pix_fmt yuv420p -c:a aac -strict experimental -r 60 ${tempDir}\\output.mp4`, (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return;
         }
         console.log(`stdout: ${stdout}`);
         console.error(`stderr: ${stderr}`);
+        bar.tick();
     });
 }
 
