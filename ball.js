@@ -19,11 +19,18 @@ function drawBall(context, x, y) {
 }
 
 async function createImages() {
+    // Create a temp directory to store the images in the current working directory
     const tempDir = path.join(process.cwd(), 'temp');
+
+    // Remove the temp directory if it exists
+    if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true });
+    }
+
     fs.mkdirSync(tempDir, { recursive: true });
     console.log(`Images will be written to ${tempDir}`);
 
-    const bar = new ProgressBar(':bar :percent', { total: totalImages });
+    const bar = new ProgressBar(':bar :percent :etas :elapseds', { total: totalImages, width: 40 });
 
     for (let i = 0; i < totalImages; i++) {
         const canvas = createCanvas(width, height);
