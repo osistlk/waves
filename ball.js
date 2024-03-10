@@ -81,7 +81,7 @@ async function createImages() {
     console.log(`\nCollision sound generated as 'collisionSound.wav'`);
 
     // Update the ffmpeg command to use the new collision sound file
-    exec(`ffmpeg -framerate 60 -i ${tempDir}/image%01d.jpeg -i collisionSound.wav -c:v mpeg4 -c:a aac -strict experimental -r 60 ${tempDir}output.mp4`, (error, stdout, stderr) => {
+    exec(`ffmpeg -framerate 60 -i ${tempDir}/image%01d.jpeg -i collisionSound.wav -c:v mpeg4 -c:a aac -strict experimental -r 60 ${tempDir}\\output.mp4`, (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return;
