@@ -6,7 +6,7 @@ const ProgressBar = require('progress');
 
 const width = 2560;
 const height = 1440;
-const numFrames = 600; // 10 seconds at 60 fps
+const numFrames = 600 * 6; // 10 seconds at 60 fps
 const tempDir = path.join(__dirname, 'temp');
 const outputDir = path.join(__dirname, 'output');
 
@@ -33,6 +33,20 @@ function hashToColor(hash) {
     return `rgb(${r}, ${g}, ${b})`;
 }
 
+// Function to adjust color based on temperature
+function adjustColorForTemperature(baseColor, temperature) {
+    const match = baseColor.match(/rgb\((\d+), (\d+), (\d+)\)/);
+    if (!match) return baseColor;
+
+    let [_, r, g, b] = match.map(Number);
+    const brightnessAdjustment = 1 + ((temperature - 50) / 50) * 0.2;
+    r = Math.min(255, r * brightnessAdjustment);
+    g = Math.min(255, g * brightnessAdjustment);
+    b = Math.min(255, b * brightnessAdjustment);
+
+    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+}
+
 // Get files from current working directory to determine particle settings
 const files = fs.readdirSync(process.cwd()).filter(file => fs.statSync(file).isFile());
 const numParticles = files.length;
@@ -41,19 +55,17 @@ const particles = [];
 // Set up particles based on files
 files.sort(); // Sort files alphabetically
 for (let i = 0; i < numParticles; i++) {
-    // Adjusted for larger sizes
-    const baseSize = 10; // Starting size
-    const maxSize = 50; // Maximum size for the largest particle
-    const size = baseSize + ((maxSize - baseSize) * i) / numParticles; // Scale size based on file position
-    const hash = hashString(files[i] + i); // Hash file name and position
-    const color = hashToColor(hash); // Map hash to color
+    const hash = hashString(files[i] + i);
+    const baseColor = hashToColor(hash);
     particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
         vx: (Math.random() - 0.5) * 20,
         vy: (Math.random() - 0.5) * 20,
-        size, // Updated size calculation for much larger particles
-        color // Color determined by hash
+        size: 10 + (100 * i) / numParticles,
+        baseColor,
+        color: baseColor, // Initial color based on hash
+        temperature: 50 // Starting temperature
     });
 }
 
@@ -69,14 +81,22 @@ function drawFrame(frameIndex) {
     context.fillStyle = '#000';
     context.fillRect(0, 0, width, height);
 
-    // Draw particles with varying sizes and colors
     particles.forEach(particle => {
         particle.x += particle.vx;
         particle.y += particle.vy;
 
-        // Reflect particles off walls
-        if (particle.x <= 0 || particle.x >= width) particle.vx *= -1;
-        if (particle.y <= 0 || particle.y >= height) particle.vy *= -1;
+        // Reflect particles off walls and adjust temperature
+        if (particle.x <= 0 || particle.x >= width) {
+            particle.vx *= -1;
+            particle.temperature = Math.min(particle.temperature + 5, 100);
+        }
+        if (particle.y <= 0 || particle.y >= height) {
+            particle.vy *= -1;
+            particle.temperature = Math.max(particle.temperature - 5, 0);
+        }
+
+        // Update color based on new temperature
+        particle.color = adjustColorForTemperature(particle.baseColor, particle.temperature);
 
         context.beginPath();
         context.arc(particle.x, particle.y, particle.size, 0, 2 * Math.PI);
