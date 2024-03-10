@@ -1,3 +1,6 @@
 node_modules
 out/
 temp
+temp_frames
+
+*.mp4
