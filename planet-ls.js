@@ -30,14 +30,27 @@ function drawSun(context) {
     context.fill();
 }
 
-function drawPlanet(context, centerX, centerY, radius, angle, planetSize, color) {
+function drawPlanet(context, centerX, centerY, radius, angle, size, color) {
     const posX = centerX + radius * Math.cos(angle);
     const posY = centerY + radius * Math.sin(angle);
 
     context.beginPath();
-    context.arc(posX, posY, planetSize, 0, 2 * Math.PI);
+    context.arc(posX, posY, size, 0, 2 * Math.PI);
     context.fillStyle = color;
     context.fill();
+}
+
+// Function to get the size of a file or total size of files in a directory
+function getSize(itemPath) {
+    const stats = fs.statSync(itemPath);
+    if (stats.isDirectory()) {
+        const files = fs.readdirSync(itemPath);
+        return files.reduce((total, file) => {
+            return total + getSize(path.join(itemPath, file));
+        }, 0);
+    } else {
+        return stats.size;
+    }
 }
 
 // Initialize the progress bar
@@ -49,7 +62,7 @@ const bar = new ProgressBar('Generating frames [:bar] :percent :etas :elapseds',
 });
 
 const items = fs.readdirSync(process.cwd());
-const angleStep = (2 * Math.PI) / items.length; // Distribute planets evenly along the orbit
+const maxSize = Math.max(...items.map(item => getSize(path.join(process.cwd(), item))));
 
 // Generate frames with progress bar update
 for (let frame = 0; frame < numFrames; frame++) {
@@ -65,12 +78,13 @@ for (let frame = 0; frame < numFrames; frame++) {
 
     // Draw planets in orbit
     items.forEach((item, index) => {
-        const isDirectory = fs.statSync(path.join(process.cwd(), item)).isDirectory();
-        const orbitRadius = 150 + index * 30; // Increase orbit radius for each planet
-        const planetSize = isDirectory ? 20 : 10;
-        const planetColor = isDirectory ? 'rgba(0, 0, 255, 0.5)' : 'rgba(139, 69, 19, 1)';
+        const itemPath = path.join(process.cwd(), item);
+        const size = getSize(itemPath);
+        const orbitRadius = 150 + index * 30; // Distance from the sun
+        const planetSize = 5 + (size / maxSize) * 20; // Scale size relative to the largest item
+        const planetColor = fs.statSync(itemPath).isDirectory() ? 'rgba(0, 0, 255, 0.5)' : 'rgba(139, 69, 19, 1)';
         const orbitSpeed = 2 * Math.PI / numFrames; // Complete one orbit per video
-        const angle = orbitSpeed * frame + angleStep * index; // Current angle based on frame
+        const angle = orbitSpeed * frame + (2 * Math.PI / items.length) * index; // Current angle
 
         drawPlanet(context, width / 2, height / 2, orbitRadius, angle, planetSize, planetColor);
     });
