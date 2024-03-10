@@ -63,7 +63,7 @@ async function createImages() {
     fs.mkdirSync(tempDir, { recursive: true });
     console.log(`Images will be written to ${tempDir}`);
     // Create the MPEG file
-    exec('ffmpeg -framerate 60 -i temp/image%01d.jpeg -c:v mpeg4 -r 60 temp/output/output.mp4', (error, stdout, stderr) => {
+    exec('ffmpeg -framerate 60 -i temp/image%01d.jpeg -vf "scale=-1:-1" -c:v mpeg4 -r 60 temp/output/output.mp4', (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return;
