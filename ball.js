@@ -1,0 +1,38 @@
+const fs = require('fs');
+const { createCanvas } = require('canvas');
+const path = require('path');
+const os = require('os');
+
+const width = 800;
+const height = 600;
+const ballRadius = 50;
+
+function drawBall(context, x, y) {
+    context.beginPath();
+    context.arc(x, y, ballRadius, 0, 2 * Math.PI, false);
+    context.fillStyle = 'green';
+    context.fill();
+    context.lineWidth = 5;
+    context.strokeStyle = '#003300';
+    context.stroke();
+}
+
+async function createImages() {
+    const tempDir = os.tmpdir();
+
+    for (let i = 0; i < 600; i++) {
+        const canvas = createCanvas(width, height);
+        const context = canvas.getContext('2d');
+
+        // Calculate ball position
+        const x = i % width;
+        const y = Math.abs(height * Math.sin(i / 100));
+
+        drawBall(context, x, y);
+
+        const buffer = canvas.toBuffer('image/jpeg');
+        await fs.promises.writeFile(path.join(tempDir, `image${i}.jpeg`), buffer);
+    }
+}
+
+createImages().catch(console.error);
