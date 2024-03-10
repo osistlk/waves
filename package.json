@@ -31,6 +31,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "gifencoder": "^2.0.1",
     "png-stream": "^1.0.5",
-    "progress": "^2.0.3"
+    "progress": "^2.0.3",
+    "wavefile": "^11.0.0"
   }
 }

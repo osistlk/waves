@@ -3,11 +3,23 @@ const { createCanvas } = require('canvas');
 const path = require('path');
 const ProgressBar = require('progress');
 const { exec } = require('child_process');
+const { WaveFile } = require('wavefile');
 
 const width = 2560;
 const height = 1440;
 const ballRadius = 100;
 const totalImages = 600 * 6;
+
+function generateBeep(frequency, duration, volume, sampleRate) {
+    const samples = new Float32Array(duration * sampleRate);
+    const step = (frequency * 2 * Math.PI) / sampleRate;
+    for (let i = 0; i < samples.length; i++) {
+        samples[i] = Math.sin(i * step) * volume;
+    }
+    const wav = new WaveFile();
+    wav.fromScratch(1, sampleRate, '32f', samples);
+    return wav.toBuffer();
+}
 
 function drawBall(context, x, y) {
     context.beginPath();
@@ -17,6 +29,13 @@ function drawBall(context, x, y) {
     context.lineWidth = 5;
     context.strokeStyle = '#003300';
     context.stroke();
+
+    // Check if the ball hits the boundary
+    if (x - ballRadius < 0 || x + ballRadius > width || y - ballRadius < 0 || y + ballRadius > height) {
+        // Generate a "beep" sound
+        const beep = generateBeep(440, 1, 0.5, 44100);
+        fs.writeFileSync('beep.wav', beep);
+    }
 }
 
 async function createImages() {
@@ -63,14 +82,13 @@ async function createImages() {
     fs.mkdirSync(tempDir, { recursive: true });
     console.log(`Images will be written to ${tempDir}`);
     // Create the MPEG file
-    exec('ffmpeg -framerate 60 -i temp/image%01d.jpeg -vf "scale=-1:-1" -c:v libx264 -pix_fmt yuv420p -r 60 temp/output/output.mp4', (error, stdout, stderr) => {
+    exec('ffmpeg -framerate 60 -i temp/image%01d.jpeg -i beep.wav -c:v mpeg4 -c:a aac -strict experimental -r 60 output/output.mp4', (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return;
         }
         console.log(`stdout: ${stdout}`);
         console.error(`stderr: ${stderr}`);
-        bar.tick();
     });
 }
 
