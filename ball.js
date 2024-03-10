@@ -4,9 +4,9 @@ const path = require('path');
 const ProgressBar = require('progress');
 const { exec } = require('child_process');
 
-const width = 1280;
-const height = 720;
-const ballRadius = 50;
+const width = 2560;
+const height = 1440;
+const ballRadius = 100;
 const totalImages = 600 * 6;
 
 function drawBall(context, x, y) {
