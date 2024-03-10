@@ -45,7 +45,7 @@ async function createImages() {
 
         drawBall(context, x, y);
 
-        const buffer = canvas.toBuffer('image/jpeg');
+        const buffer = canvas.toBuffer('image/jpeg', { quality: 1 });
         const promise = fs.promises.writeFile(path.join(tempDir, `image${i}.jpeg`), buffer);
         promises.push(promise);
         bar.tick();
