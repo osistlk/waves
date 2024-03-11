@@ -10,7 +10,7 @@ const context = canvas.getContext('2d');
 context.fillStyle = '#000000'; // Dark background
 context.fillRect(0, 0, width, height);
 
-// Set properties for the surface and particle
+// Set properties for the surface and particles
 context.strokeStyle = '#FFFFFF'; // Light color for visibility
 context.lineWidth = 5;
 
@@ -21,34 +21,38 @@ context.moveTo(0, surfaceY);
 context.lineTo(width, surfaceY);
 context.stroke();
 
-// Calculate and draw the particle's trajectory at a 45-degree angle towards the surface
-const particleStartX = width * 0.5;
-const particleStartY = height * 0.2;
-const impactPointX = width * 0.7; // Adjust this value as needed
-const impactPointY = surfaceY;
+// Function to draw a single particle and its trajectory
+function drawParticle(particleStartX, particleStartY, impactPointX, impactPointY) {
+    // Draw trajectory
+    context.setLineDash([5, 15]); // Dashed line for the trajectory
+    context.beginPath();
+    context.moveTo(particleStartX, particleStartY);
+    context.lineTo(impactPointX, impactPointY);
+    context.stroke();
 
-// Draw trajectory
-context.setLineDash([5, 15]); // Dashed line for the trajectory
-context.beginPath();
-context.moveTo(particleStartX, particleStartY);
-context.lineTo(impactPointX, impactPointY);
-context.stroke();
+    // Draw particle at the starting point
+    context.setLineDash([]); // Reset to solid line
+    context.beginPath();
+    context.arc(particleStartX, particleStartY, 10, 0, 2 * Math.PI, false); // Particle size
+    context.fillStyle = '#FF0000'; // Particle color
+    context.fill();
 
-// Draw particle at the starting point
-context.setLineDash([]); // Reset to solid line
-context.beginPath();
-context.arc(particleStartX, particleStartY, 10, 0, 2 * Math.PI, false); // Particle size
-context.fillStyle = '#FF0000'; // Particle color
-context.fill();
+    // Highlight the impact point
+    context.beginPath();
+    context.arc(impactPointX, impactPointY, 10, 0, 2 * Math.PI, false);
+    context.fillStyle = '#FFFF00'; // Impact point color
+    context.fill();
+}
 
-// Highlight the impact point
-context.beginPath();
-context.arc(impactPointX, impactPointY, 10, 0, 2 * Math.PI, false);
-context.fillStyle = '#FFFF00'; // Impact point color
-context.fill();
+// Simulate multiple particles
+const numberOfParticles = 5;
+for (let i = 0; i < numberOfParticles; i++) {
+    const xOffset = (width / (numberOfParticles + 1)) * (i + 1);
+    drawParticle(xOffset, height * 0.2, xOffset, surfaceY);
+}
 
 // Save the canvas as a JPEG image at 100% quality
-const out = fs.createWriteStream(__dirname + '/particleImpactSimulation.jpg');
+const out = fs.createWriteStream(__dirname + '/multipleParticlesImpactSimulation.jpg');
 const stream = canvas.createJPEGStream({
     quality: 1 // Set quality to 100%
 });
