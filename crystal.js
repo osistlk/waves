@@ -10,15 +10,22 @@ const context = canvas.getContext('2d');
 context.fillStyle = '#000000'; // Dark background
 context.fillRect(0, 0, width, height);
 
-// Lattice configuration
-const latticeSpacing = 150; // Distance between lattice points
-const atomRadius = 20; // Radius of atoms in the lattice
-const particleRadius = 5; // Radius of particles associated with each atom
+// Lattice configuration with some organic variation
+const latticeSpacing = 150; // Average distance between lattice points
+const maxAtomRadius = 20; // Maximum radius of atoms in the lattice
+const maxParticleRadius = 5; // Maximum radius of particles associated with each atom
+
+// Function to introduce randomness
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
 
 // Draw a single atom and its associated particles
 function drawAtomWithParticles(atomX, atomY) {
-    // Draw the central atom
-    context.fillStyle = '#FFD700'; // Gold color for the central atom
+    // Draw the central atom with random size and color
+    const atomRadius = getRandomArbitrary(maxAtomRadius - 5, maxAtomRadius);
+    const atomHue = getRandomArbitrary(0, 360);
+    context.fillStyle = `hsl(${atomHue}, 100%, 50%)`;
     context.beginPath();
     context.arc(atomX, atomY, atomRadius, 0, Math.PI * 2, false);
     context.fill();
@@ -29,29 +36,33 @@ function drawAtomWithParticles(atomX, atomY) {
         { x: -1, y: 1 }, { x: 1, y: 1 }
     ];
 
-    // Draw particles
+    // Draw particles with some randomness in position, size, and color
     offsets.forEach(offset => {
-        const particleX = atomX + offset.x * particleRadius * 3; // 3 times the radius for spacing
-        const particleY = atomY + offset.y * particleRadius * 3;
+        const particleRadius = getRandomArbitrary(maxParticleRadius - 2, maxParticleRadius);
+        const particleDistance = atomRadius + particleRadius * 2 + getRandomArbitrary(-5, 5);
+        const particleX = atomX + offset.x * particleDistance;
+        const particleY = atomY + offset.y * particleDistance;
 
-        context.fillStyle = '#FFFFFF'; // White color for particles
+        const particleHue = getRandomArbitrary(0, 360);
+        context.fillStyle = `hsla(${particleHue}, 100%, 70%, 0.8)`;
         context.beginPath();
         context.arc(particleX, particleY, particleRadius, 0, Math.PI * 2, false);
         context.fill();
     });
 }
 
-// Create crystal lattice by iterating over a grid pattern
+// Create an organic crystal lattice by iterating over a grid pattern with randomness
 for (let x = 0; x < width; x += latticeSpacing) {
     for (let y = 0; y < height; y += latticeSpacing) {
-        // Offset every other row to create a staggered effect
-        const offsetX = (y / latticeSpacing) % 2 * (latticeSpacing / 2);
-        drawAtomWithParticles(x + offsetX, y);
+        // Introduce randomness in position
+        const offsetX = getRandomArbitrary(-10, 10);
+        const offsetY = getRandomArbitrary(-10, 10);
+        drawAtomWithParticles(x + offsetX, y + offsetY);
     }
 }
 
 // Save the canvas as a JPEG image at 100% quality
-const out = fs.createWriteStream(__dirname + '/crystalLatticeSimulation.jpg');
+const out = fs.createWriteStream(__dirname + '/organicCrystalLatticeSimulation.jpg');
 const stream = canvas.createJPEGStream({
     quality: 1 // Set quality to 100%
 });
