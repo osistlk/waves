@@ -21,8 +21,8 @@ for (let frame = 0; frame < fps * duration; frame++) {
         context.fill();
     }
 
-    // Save the canvas to a JPEG file
-    const out = fs.createWriteStream(__dirname + `/frame${frame.toString().padStart(5, '0')}.jpeg`);
+    // Save the canvas to a JPEG file in the 'temp' subdirectory
+    const out = fs.createWriteStream(__dirname + `/temp/frame${frame.toString().padStart(5, '0')}.jpeg`);
     const stream = canvas.createJPEGStream({
         quality: 1, // 100% quality
         chromaSubsampling: false // disable chroma subsampling for better color accuracy
@@ -30,8 +30,8 @@ for (let frame = 0; frame < fps * duration; frame++) {
     stream.pipe(out);
 }
 
-// Use FFmpeg to convert the JPEG images into a video
-exec('ffmpeg -framerate 60 -i frame%05d.jpeg -c:v mpeg4 -r 60 -pix_fmt yuv420p output.mp4', (error, stdout, stderr) => {
+// Use FFmpeg to convert the JPEG images in the 'temp' subdirectory into a video in the 'output' subdirectory
+exec('ffmpeg -framerate 60 -i temp/frame%05d.jpeg -c:v mpeg4 -r 60 -pix_fmt yuv420p output/output.mp4', (error, stdout, stderr) => {
     if (error) {
         console.error(`exec error: ${error}`);
         return;
