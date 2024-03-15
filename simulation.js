@@ -1,5 +1,7 @@
 const { createCanvas } = require('canvas');
 const fs = require('fs');
+const ProgressBar = require('progress');
+
 class Particle {
     constructor(x, y, mass) {
         this.x = x;
@@ -45,6 +47,7 @@ class Simulation {
         }
     }
 
+
     draw(frameNumber) {
         const canvas = createCanvas(800, 600);
         const context = canvas.getContext('2d');
@@ -62,7 +65,7 @@ class Simulation {
         }
 
         // Save the canvas to a file
-        const out = fs.createWriteStream(__dirname + `/frame_${frameNumber}.jpeg`);
+        const out = fs.createWriteStream(__dirname + `/temp/frame_${frameNumber}.jpeg`);
         const stream = canvas.createJPEGStream();
         stream.pipe(out);
     }
@@ -72,7 +75,18 @@ class Simulation {
 let sim = new Simulation();
 sim.addParticle(new Particle(100, 0, 1));
 let frameNumber = 0;
-setInterval(() => {
+let totalFrames = 60 * 60; // 60 seconds * 60 frames per second
+
+// Create a progress bar
+let bar = new ProgressBar(':bar :etas :elapseds', { total: totalFrames, width: 50 });
+
+let intervalId = setInterval(() => {
     sim.update();
     sim.draw(frameNumber++);
+    bar.tick();
+
+    // Stop after 60 seconds
+    if (frameNumber >= totalFrames) {
+        clearInterval(intervalId);
+    }
 }, 1000 / 60); // update and draw 60 times per second
