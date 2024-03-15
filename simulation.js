@@ -1,5 +1,5 @@
 const { createCanvas } = require('canvas');
-
+const fs = require('fs');
 class Particle {
     constructor(x, y, mass) {
         this.x = x;
@@ -45,7 +45,7 @@ class Simulation {
         }
     }
 
-    draw() {
+    draw(frameNumber) {
         const canvas = createCanvas(800, 600);
         const context = canvas.getContext('2d');
 
@@ -62,9 +62,8 @@ class Simulation {
         }
 
         // Save the canvas to a file
-        const fs = require('fs');
-        const out = fs.createWriteStream(__dirname + '/particle_positions.png');
-        const stream = canvas.createPNGStream();
+        const out = fs.createWriteStream(__dirname + `/frame_${frameNumber}.jpeg`);
+        const stream = canvas.createJPEGStream();
         stream.pipe(out);
     }
 }
@@ -72,7 +71,8 @@ class Simulation {
 // Usage
 let sim = new Simulation();
 sim.addParticle(new Particle(100, 0, 1));
+let frameNumber = 0;
 setInterval(() => {
     sim.update();
-    console.log('Total kinetic energy:', sim.totalKineticEnergy());
-}, 1000);
+    sim.draw(frameNumber++);
+}, 1000 / 60); // update and draw 60 times per second
