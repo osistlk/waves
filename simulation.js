@@ -64,9 +64,9 @@ class Simulation {
             context.fill();
         }
 
-        // Save the canvas to a file asynchronously
+        // Save the canvas to a file asynchronously with 100% quality
         const out = fs.createWriteStream(__dirname + `/temp/frame_${frameNumber}.jpeg`);
-        const stream = canvas.createJPEGStream();
+        const stream = canvas.createJPEGStream({ quality: 1 }); // 1 = 100% quality
         stream.pipe(out);
         out.on('finish', callback);
     }
@@ -91,7 +91,7 @@ let frameNumber = 0;
 let totalFrames = 60 * 60; // 60 seconds * 60 frames per second
 
 // Create a progress bar
-let bar = new ProgressBar(':bar', { total: totalFrames });
+let bar = new ProgressBar(':elapseds :etas :bar', { total: totalFrames, width: 20 });
 
 function drawNextFrame() {
     if (frameNumber < totalFrames) {
