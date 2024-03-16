@@ -42,7 +42,7 @@ class Simulation {
     }
 
     draw(frameNumber, callback) {
-        const canvas = createCanvas(800, 800);
+        const canvas = createCanvas(400, 400);
         const context = canvas.getContext('2d');
 
         // Clear the canvas with a dark background
@@ -97,3 +97,5 @@ function drawNextFrame() {
 }
 
 drawNextFrame();
+
+// ffmpeg -framerate 60 -pattern_type glob -i 'temp/frame_*.jpeg' -c:v libx264 -pix_fmt yuv420p -crf 0 output.mp4
