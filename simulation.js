@@ -42,7 +42,7 @@ class Simulation {
     }
 
     draw(frameNumber, callback) {
-        const canvas = createCanvas(800, 600);
+        const canvas = createCanvas(800, 800);
         const context = canvas.getContext('2d');
 
         // Clear the canvas with a dark background
@@ -53,7 +53,7 @@ class Simulation {
         context.fillStyle = 'white';
         for (let particle of this.particles) {
             context.beginPath();
-            context.arc(particle.x, particle.y, 2, 0, 2 * Math.PI);
+            context.arc(particle.x, particle.y, 20, 0, 2 * Math.PI);
             context.fill();
         }
 
