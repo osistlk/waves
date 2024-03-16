@@ -79,7 +79,7 @@ if (!fs.existsSync(path.join(__dirname, 'temp'))) {
 
 // Usage
 let sim = new Simulation();
-sim.addParticle(new Particle(100, 0, 1));
+sim.addParticle(new Particle(0, 0, 50));
 let frameNumber = 0;
 let totalFrames = 60 * 60; // 60 seconds * 60 frames per second
 
