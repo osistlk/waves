@@ -2,11 +2,11 @@ const canvas = document.getElementById('particleCanvas');
 const ctx = canvas.getContext('2d');
 let darkMode = true;
 
-function toggleDarkMode() {
+function toggleDarkMode(particles) {
     darkMode = !darkMode;
     canvas.classList.toggle('dark-mode', darkMode);
     // Redraw particles to match the new mode
-    drawParticles();
+    drawParticles(particles);
 }
 
 document.getElementById('toggleDarkMode').addEventListener('click', toggleDarkMode);
@@ -47,16 +47,13 @@ class Particle {
     }
 }
 
-let particles = [];
-function resetParticles() {
-    particles = [];
+function resetParticles(particles) {
     for (let i = 0; i < 100; i++) {
         particles.push(new Particle());
     }
 }
-resetParticles();
 
-function drawParticles() {
+function drawParticles(particles) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = darkMode ? '#333333' : '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -69,4 +66,6 @@ function drawParticles() {
     requestAnimationFrame(drawParticles);
 }
 
-drawParticles();
+let particles = [];
+resetParticles(particles);
+drawParticles(particles);
