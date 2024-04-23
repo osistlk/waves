@@ -17,7 +17,7 @@ let completedProcesses = 0;
 const framesPerProcess = Math.ceil(numFrames / numCPUs);
 
 function createVideo() {
-    const ffmpegCmd = `ffmpeg -framerate 60 -i ${tempDir}/frame-%04d.png -c:v libx264 -pix_fmt yuv420p -vf "scale=1280:720" filesystem_visualization.mp4`;
+    const ffmpegCmd = `ffmpeg -y -vsync 0 -hwaccel cuda -hwaccel_output_format cuda -framerate 60 -i ${tempDir}/frame-%04d.png -an -c:v h264_nvenc filesystem_visualization.mp4`;
 
     exec(ffmpegCmd, (error, stdout, stderr) => {
         if (error) {
@@ -26,6 +26,7 @@ function createVideo() {
         }
         console.log('Video created: filesystem_visualization.mp4');
         // Optional: Cleanup temp frames after creating the video
+        return;
     });
 }
 

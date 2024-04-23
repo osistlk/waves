@@ -98,4 +98,4 @@ function drawNextFrame() {
 
 drawNextFrame();
 
-// ffmpeg -framerate 60 -pattern_type glob -i 'temp/frame_*.jpeg' -c:v libx264 -pix_fmt yuv420p -crf 0 output.mp4
+// ffmpeg -framerate 60 -i "temp\frame_%d.jpeg" -c:v libx264 -pix_fmt yuv420p -r 60 output.mp4
